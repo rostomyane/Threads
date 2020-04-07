@@ -24,6 +24,7 @@ public:
         std::unique_lock<std::mutex> l(mtx);
         printFirst();
         mfirst = true;
+        cv.notify_all();
     }
 
     void second(std::function<void()> printSecond) {
@@ -31,7 +32,6 @@ public:
         cv.wait(l, [this] {return mfirst == true; });
         printSecond();
         msecond = true;
-        cv.notify_all();
     }
 
     void third(std::function<void()> printThird) {
