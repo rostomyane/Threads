@@ -23,5 +23,8 @@
     <ClInclude Include="FirstSecondThird.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Experimental.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
