@@ -65,14 +65,16 @@ Merge k sorted linked lists and return it as one sorted list. Analyze and descri
 */
 class MergeKLists {
 public:
-	ListNode* mergeKLists(vector<ListNode*>& lists) {
+	ListNode* mergeKLists(vector<ListNode*> lists) {
 		if (lists.empty()) { return NULL; }
-		ListNode* res = lists[0];
-		for (int i = 1; i < lists.size(); ++i)
-		{
-			res = mergeTwoLists(res, lists[i]);
-		}
-		return res;
+		if (lists.size() == 1) { return lists[0]; }
+		if (lists.size() == 2) { return mergeTwoLists(lists[0], lists[1]); }
+
+		int mid = lists.size() / 2;
+		ListNode* left = mergeKLists({ lists.begin(),lists.begin() + mid });
+		ListNode* right = mergeKLists({ lists.begin() + mid,lists.end() });
+		return mergeTwoLists(left, right);
+
 	}
 
 	ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
