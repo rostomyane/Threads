@@ -141,6 +141,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DiningPhilosophers.h" />
     <ClInclude Include="Experimental.h" />
     <ClInclude Include="FirstSecondThird.h" />
     <ClInclude Include="LeetCode.h" />

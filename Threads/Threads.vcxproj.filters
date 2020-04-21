@@ -24,6 +24,9 @@
     <ClInclude Include="LeetCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DiningPhilosophers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
