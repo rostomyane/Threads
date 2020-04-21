@@ -11,6 +11,13 @@
 #include <sstream>
 using namespace std;
 
+struct Node {
+public:
+	int val;
+	Node* left;
+	Node* right;
+};
+
 struct TreeNode {
 	int val;
 	TreeNode* left;
@@ -177,25 +184,247 @@ Given a string S and a string T, find the minimum window in S which will contain
 If there is no such window in S that covers all characters in T, return the empty string "".
 If there is such window, you are guaranteed that there will always be only one unique minimum window in S.
 */
-class Solution {
+class MinWindow {
 public:
 	string minWindow(string s, string t) {
-		unordered_map<char, int> letters; //unordered map for storing the characters in t that we need to check for in s
+		unordered_map<char, int> letters;
 		for (auto c : t) letters[c]++;
-		int count = 0; //counts number of t's letters in current window
+		int count = 0;
 		int low = 0, min_length = INT_MAX, min_start = 0;
 		for (int high = 0; high < s.length(); high++) {
-			if (letters[s[high]] > 0) { count++; } //means that this letter is in t   
-			letters[s[high]]--; //reduce the count for the letter on which we are currently 
-			if (count == t.length()) { //if current windows contains all of the letters in t
-				while (low < high && letters[s[low]] < 0) { letters[s[low]]++, low++; } //move low ahead if its not of any significance
-				if (min_length > high - low) { min_length = high - (min_start = low) + 1; } //update the min length
-				letters[s[low++]]++; //move low ahaead and also increment the value
-				count--; //count-- as we are moving low ahead & low pointed to a char in t before
+			if (letters[s[high]] > 0) { count++; }
+			letters[s[high]]--;
+			if (count == t.length()) {
+				while (low < high && letters[s[low]] < 0) { letters[s[low]]++, low++; }
+				if (min_length > high - low) { min_length = high - (min_start = low) + 1; }
+				letters[s[low++]]++;
+				count--;
 			}
 		}
-		return min_length == INT_MAX ? "" : s.substr(min_start, min_length); //check for edge case & return the result
+		return min_length == INT_MAX ? "" : s.substr(min_start, min_length);
 	}
 };
 
-	
+
+/*H
+Given a string, find the length of the longest substring T that contains at most k distinct characters.
+*/
+class MaxSubarrayKDistinct {
+public:
+	int lengthOfLongestSubstringKDistinct(string s, int k) {
+		vector<int> ctr(256);
+		int left = -1, distinct = 0, maxlen = 0;
+		for (int right = 0; right < s.size(); ++right) {
+			distinct += ctr[s[right]]++ == 0;
+			while (distinct > k)
+				distinct -= --ctr[s[++left]] == 0;
+			maxlen = max(maxlen, right - left);
+		}
+		return maxlen;
+	}
+};
+
+
+/*H
+Remove the minimum number of invalid parentheses in order to make the input string valid. Return all possible results.
+Note: The input string may contain letters other than the parentheses ( and ).
+*/
+class RemoveInvalidParentheses {
+public:
+	vector<string> removeInvalidParentheses(string s) {
+		unordered_set<string> result;
+		int left_removed = 0;
+		int right_removed = 0;
+		for (auto c : s) {
+			if (c == '(') {
+				++left_removed;
+			}
+			if (c == ')') {
+				if (left_removed != 0) {
+					--left_removed;
+				}
+				else {
+					++right_removed;
+				}
+			}
+		}
+		helper(s, 0, left_removed, right_removed, 0, "", result);
+		return vector<string>(result.begin(), result.end());
+	}
+private:
+	void helper(string s, int index, int left_removed, int right_removed, int pair, string path, unordered_set<string>& result) {
+		if (index == s.size()) {
+			if (left_removed == 0 && right_removed == 0 && pair == 0) {
+				result.insert(path);
+			}
+			return;
+		}
+		if (s[index] != '(' && s[index] != ')') {
+			helper(s, index + 1, left_removed, right_removed, pair, path + s[index], result);
+		}
+		else {
+			if (s[index] == '(') {
+				if (left_removed > 0) {
+					helper(s, index + 1, left_removed - 1, right_removed, pair, path, result);
+				}
+				helper(s, index + 1, left_removed, right_removed, pair + 1, path + s[index], result);
+			}
+			if (s[index] == ')') {
+				if (right_removed > 0) {
+					helper(s, index + 1, left_removed, right_removed - 1, pair, path, result);
+				}
+				if (pair > 0) {
+					helper(s, index + 1, left_removed, right_removed, pair - 1, path + s[index], result);
+				}
+			}
+		}
+	}
+};
+
+
+/*H
+Integer to English Words
+*/
+class IntToString {
+public:
+	vector<string> digits = { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven",
+	  "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
+	  "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
+	vector<string> tens = { "","Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
+
+	string intToStr(int n) {
+		if (n >= 1000000000) {
+			return intToStr(n / 1000000000) + " Billion" + intToStr(n % 1000000000);
+		}
+		else if (n >= 1000000) {
+			return intToStr(n / 1000000) + " Million" + intToStr(n % 1000000);
+		}
+		else if (n >= 1000) {
+			return intToStr(n / 1000) + " Thousand" + intToStr(n % 1000);
+		}
+		else if (n >= 100) {
+			return intToStr(n / 100) + " Hundred" + intToStr(n % 100);
+		}
+		else if (n >= 20) {
+			return  " " + tens[n / 10] + intToStr(n % 10);
+		}
+		else if (n >= 1) {
+			return " " + digits[n];
+		}
+		else {
+			return "";
+		}
+	}
+
+	string numberToWords(int num) {
+		if (num == 0) {
+			return "Zero";
+		}
+		else {
+			string ret = intToStr(num);
+			return ret.substr(1, ret.length() - 1);
+		}
+	}
+};
+
+
+/*H
+Given a file and assume that you can only read the file using a given method read4,
+implement a method read to read n characters. Your method read may be called multiple times.
+The API read4 reads 4 consecutive characters from the file, then writes those characters into the buffer array buf.
+The return value is the number of actual characters read.
+*/
+class Read4n {
+	int read4(char* buf) { return 0; }
+public:
+	int read(char* buf, int n) {
+		int i = 0;
+		while (i < n && (i4 < n4 || (i4 = 0) < (n4 = read4(buf4))))
+			buf[i++] = buf4[i4++];
+		return i;
+	}
+	char buf4[4];
+	int i4 = 0, n4 = 0;
+};
+
+
+/*H
+Given a string that contains only digits 0-9 and a target value, return all possibilities to add
+binary operators (not unary) +, -, or *between the digits so they evaluate to the target value.
+*/
+class AddOperations {
+public:
+	vector<string> addOperators(string num, int target) {
+		vector<string> res;
+		dfs(num, 0, target, "", 0, 0, res);
+		return res;
+	}
+
+	void dfs(string& num, int start, int target, string path, long prev, long cur, vector<string>& res) {
+		if (start == num.size() && prev + cur == target) res.push_back(path);
+
+		for (int i = 1; start + i <= num.size(); i++) {
+			string s = num.substr(start, i);
+			long n = stoll(s);
+			if (to_string(n).size() != s.size()) return;
+			if (!start) dfs(num, i, target, s, 0, n, res);
+			else {
+				dfs(num, start + i, target, path + "+" + s, prev + cur, n, res);
+				dfs(num, start + i, target, path + "-" + s, prev + cur, -n, res);
+				dfs(num, start + i, target, path + "*" + s, prev, cur * n, res);
+			}
+		}
+	}
+};
+
+
+/*M
+Convert BST to doble linked list
+*/
+class TreeToDLL {
+public:
+	Node* treeToDoublyList(Node* root)
+	{
+		if (!root) return nullptr;
+		Node* head = nullptr;
+		Node* prev = nullptr;
+		inOrder(root, prev, head);
+		prev->right = head;
+		head->left = prev;
+		return head;
+	}
+
+protected:
+	void inOrder(Node* node, Node*& prev, Node*& head)
+	{
+		if (node->left) { inOrder(node->left, prev, head); }
+		if (!prev) { head = node; }
+		else
+		{
+			prev->right = node;
+			node->left = prev;
+		}
+		prev = node;
+		if (node->right) { inOrder(node->right, prev, head); }
+	}
+};
+
+
+/*M
+*/
+class CPUIntervals {
+public:
+	int leastInterval(vector<char>& tasks, int n) {
+		unordered_map<char, int>mp;
+		int count = 0;
+		for (auto e : tasks)
+		{
+			mp[e]++;
+			count = max(count, mp[e]);
+		}
+
+		int ans = (count - 1) * (n + 1);
+		for (auto e : mp) if (e.second == count) ans++;
+		return max((int)tasks.size(), ans);
+	}
+};
