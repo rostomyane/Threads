@@ -15,19 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FirstSecondThird.h">
+    <ClInclude Include="..\Threads\LeetCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Experimental.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DiningPhilosophers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
