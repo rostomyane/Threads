@@ -13,11 +13,9 @@ public:
 		:_name{ n }, _c(c), _s(s){}
 };
 
-
+using namespace html;
 
 int main() {
-	HTMLBuilder builder{"ul"};
-	builder.addChild("li", "hello");
-	builder.addChild("li", "world");
-	std::cout << builder.str();
+	BuilderFacets::Person p = BuilderFacets::Person::create().lives().at("somewhere").withPostCode("e149ja").in("London").works().at("GS").asA("VP");
+	int a;
 }
