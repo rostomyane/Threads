@@ -231,52 +231,31 @@ Note: The input string may contain letters other than the parentheses ( and ).
 class RemoveInvalidParentheses {
 public:
 	vector<string> removeInvalidParentheses(string s) {
-		unordered_set<string> result;
-		int left_removed = 0;
-		int right_removed = 0;
-		for (auto c : s) {
-			if (c == '(') {
-				++left_removed;
-			}
-			if (c == ')') {
-				if (left_removed != 0) {
-					--left_removed;
-				}
-				else {
-					++right_removed;
-				}
-			}
-		}
-		helper(s, 0, left_removed, right_removed, 0, "", result);
-		return vector<string>(result.begin(), result.end());
+		vector<string> output;
+		removeHelper(s, output, 0, 0, '(', ')');
+		return output;
 	}
-private:
-	void helper(string s, int index, int left_removed, int right_removed, int pair, string path, unordered_set<string>& result) {
-		if (index == s.size()) {
-			if (left_removed == 0 && right_removed == 0 && pair == 0) {
-				result.insert(path);
-			}
-			return;
-		}
-		if (s[index] != '(' && s[index] != ')') {
-			helper(s, index + 1, left_removed, right_removed, pair, path + s[index], result);
-		}
-		else {
-			if (s[index] == '(') {
-				if (left_removed > 0) {
-					helper(s, index + 1, left_removed - 1, right_removed, pair, path, result);
-				}
-				helper(s, index + 1, left_removed, right_removed, pair + 1, path + s[index], result);
-			}
-			if (s[index] == ')') {
-				if (right_removed > 0) {
-					helper(s, index + 1, left_removed, right_removed - 1, pair, path, result);
-				}
-				if (pair > 0) {
-					helper(s, index + 1, left_removed, right_removed, pair - 1, path + s[index], result);
-				}
+
+	void removeHelper(string s, vector<string>& output, int iStart, int jStart, char openParen, char closedParen) {
+		int numOpenParen = 0, numClosedParen = 0;
+		for (int i = iStart; i < s.length(); i++) {
+			if (s[i] == openParen) numOpenParen++;
+			if (s[i] == closedParen) numClosedParen++;
+			if (numClosedParen > numOpenParen) { // We have an extra closed paren we need to remove
+				for (int j = jStart; j <= i; j++) // Try removing one at each position, skipping duplicates
+					if (s[j] == closedParen && (j == jStart || s[j - 1] != closedParen))
+						// Recursion: iStart = i since we now have valid # closed parenthesis thru i. jStart = j prevents duplicates
+						removeHelper(s.substr(0, j) + s.substr(j + 1, s.length()), output, i, j, openParen, closedParen);
+				return; // Stop here. The recursive calls handle the rest of the string.
 			}
 		}
+		// No invalid closed parenthesis detected. Now check opposite direction, or reverse back to original direction.
+		string reversed = s;
+		reverse(reversed.begin(), reversed.end());
+		if (openParen == '(')
+			removeHelper(reversed, output, 0, 0, ')', '(');
+		else
+			output.push_back(reversed);
 	}
 };
 
@@ -449,5 +428,38 @@ public:
 			root->left = NULL;
 			root = root->right;
 		}
+	}
+};
+
+class LongestIncreasinPath {
+public:
+	int dx[4] = { 0, -1, 1, 0 };
+	int dy[4] = { 1, 0, 0, -1 };
+
+	vector<vector<int>> dp;
+
+	int dfs(vector<vector<int>>& grid, int i, int j, int prev) {
+		if (i < 0 || i >= grid.size() || j < 0 || j >= grid[0].size()) return 0;
+		if (grid[i][j] <= prev) return 0;
+		if (dp[i][j] != -1) return dp[i][j];
+		int ans = 0;
+		for (int k = 0; k < 4; k++) {
+			int I = i + dx[k];
+			int J = j + dy[k];
+			ans = max(ans, 1 + dfs(grid, I, J, grid[i][j]));
+		}
+		return dp[i][j] = ans;
+	}
+
+	int longestIncreasingPath(vector<vector<int>>& matrix) {
+		dp = vector<vector<int>>(1000, vector<int>(1000, -1));
+		if (!matrix.size()) return 0;
+		int ans = 1;
+		for (int i = 0; i < matrix.size(); i++) {
+			for (int j = 0; j < matrix[0].size(); j++) {
+				ans = max(ans, dfs(matrix, i, j, INT_MIN));
+			}
+		}
+		return ans;
 	}
 };
