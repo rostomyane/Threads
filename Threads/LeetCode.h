@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <set>
 #include <map>
@@ -467,42 +466,150 @@ public:
 		}
 		return ans;
 	}
+};
 
-	class KthLargestElement {
-	public:
-		int findKthLargest(vector<int>& nums, int k) {
-			int left = 0, right = nums.size() - 1, kth;
-			while (true) {
-				int idx = partition(nums, left, right);
-				if (idx == k - 1) {
-					kth = nums[idx];
-					break;
-				}
-				if (idx < k - 1) {
-					left = idx + 1;
-				}
-				else {
-					right = idx - 1;
-				}
+/*H
+Kth largest element in the array
+*/
+class KthLargestElement {
+public:
+	int findKthLargest(vector<int>& nums, int k) {
+		int left = 0, right = nums.size() - 1, kth;
+		while (true) {
+			int idx = partition(nums, left, right);
+			if (idx == k - 1) {
+				kth = nums[idx];
+				break;
 			}
-			return kth;
-		}
-	private:
-		int partition(vector<int>& nums, int left, int right) {
-			int pivot = nums[left], l = left + 1, r = right;
-			while (l <= r) {
-				if (nums[l] < pivot && nums[r] > pivot) {
-					swap(nums[l++], nums[r--]);
-				}
-				if (nums[l] >= pivot) {
-					l++;
-				}
-				if (nums[r] <= pivot) {
-					r--;
-				}
+			if (idx < k - 1) {
+				left = idx + 1;
 			}
-			swap(nums[left], nums[r]);
-			return r;
+			else {
+				right = idx - 1;
+			}
 		}
-	};
+		return kth;
+	}
+private:
+	int partition(vector<int>& nums, int left, int right) {
+		int pivot = nums[left], l = left + 1, r = right;
+		while (l <= r) {
+			if (nums[l] < pivot && nums[r] > pivot) {
+				swap(nums[l++], nums[r--]);
+			}
+			if (nums[l] >= pivot) {
+				l++;
+			}
+			if (nums[r] <= pivot) {
+				r--;
+			}
+		}
+		swap(nums[left], nums[r]);
+		return r;
+	}
+};
+
+
+/*H
+Find kth digit int the 123...sequence
+*/
+class FindKthDigit
+{
+public:
+	int findNthDigit(int n)
+	{
+		// step 1. calculate how many digits the number has.
+		long base = 9, digits = 1;
+		while (n - base * digits > 0)
+		{
+			n -= base * digits;
+			base *= 10;
+			digits++;
+		}
+
+		// step 2. calculate what the number is.
+		int index = n % digits;
+		if (index == 0)
+			index = digits;
+		long num = 1;
+		for (int i = 1; i < digits; i++)
+			num *= 10;
+		num += (index == digits) ? n / digits - 1 : n / digits;;
+
+		// step 3. find out which digit in the number is we wanted.
+		for (int i = index; i < digits; i++)
+			num /= 10;
+		return num % 10;
+	}
+};
+
+
+/*E
+Given a binary tree, you need to compute the length of the diameter of the tree.
+The diameter of a binary tree is the length of the longest path between any two nodes in a tree.
+This path may or may not pass through the root
+*/
+class DiameterOfBST {
+public:
+	int diameterOfBinaryTree(TreeNode* root) {
+		int diameter = 0;
+		height(root, diameter);
+		return diameter;
+	}
+private:
+	int height(TreeNode* node, int& diameter) {
+		if (!node) {
+			return 0;
+		}
+		int lh = height(node->left, diameter);
+		int rh = height(node->right, diameter);
+		diameter = max(diameter, lh + rh);
+		return 1 + max(lh, rh);
+	}
+};
+
+
+/*M
+3sum, find all unique triplets whos sum is 0 
+*/
+class ThreeSum {
+public:
+	vector<vector<int>> threeSum(vector<int>& nums) {
+		int n = nums.size();
+		if (n < 3) { return {  }; }
+		sort(nums.begin(), nums.end());
+		std::vector<std::vector<int>> result;
+		for (int i = 0; i < n; ++i)
+		{
+			int target = -nums[i];
+			if (target >= 0)
+			{
+				int l = i + 1;
+				int r = n - 1;
+				while (l < r)
+				{
+					if (nums[l] + nums[r] == target)
+					{
+						result.push_back({ nums[i], nums[l], nums[r], });
+						l++; r--;
+						while (l < r && nums[l] == nums[l - 1]) { l++; }
+						while (l < r && nums[r] == nums[r + 1]) { r--; }
+					}
+					else if (nums[l] + nums[r] > target)
+					{
+						r--;
+					}
+					else
+					{
+						l++;
+					}
+
+				}
+
+			}
+			while (i < n - 1 && nums[i] == nums[i + 1]) { i++; }
+
+		}
+		return result;
+	}
 };
