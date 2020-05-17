@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <stack>
 #include <sstream>
 using namespace std;
 
@@ -805,3 +806,135 @@ public:
 private:
 	unordered_map<Node*, Node*> copies;
 };
+
+
+/*M
+lenght of longest substring with all distinct chars
+*/
+class AllDistinctChars {
+public:
+	int lengthOfLongestSubstring(string s) {
+		vector<int> dict(256, -1);
+		int maxLen = 0, start = -1;
+		for (int i = 0; i != s.length(); i++) {
+			if (dict[s[i]] > start)
+				start = dict[s[i]];
+			dict[s[i]] = i;
+			maxLen = max(maxLen, i - start);
+		}
+		return maxLen;
+	}
+};
+
+
+/*M
+Multiply 2 strings
+*/
+class MultiplyString {
+public:
+	string multiply(string num1, string num2) {
+		string sum(num1.size() + num2.size(), '0');
+
+		for (int i = num1.size() - 1; 0 <= i; --i) {
+			int carry = 0;
+			for (int j = num2.size() - 1; 0 <= j; --j) {
+				int tmp = (sum[i + j + 1] - '0') + (num1[i] - '0') * (num2[j] - '0') + carry;
+				sum[i + j + 1] = tmp % 10 + '0';
+				carry = tmp / 10;
+			}
+			sum[i] += carry;
+		}
+
+		size_t startpos = sum.find_first_not_of("0");
+		if (string::npos != startpos) {
+			return sum.substr(startpos);
+		}
+		return "0";
+	}
+};
+
+
+/*H
+Allien dictionary
+*/
+class AllienOrder {
+	struct Node {
+		int previous_chars = 0;  // number of characters that comes before
+		vector<char> next_chars{};  // list of characters that come after
+	};
+public:
+	string alienOrder(const vector<string>& words) {
+		std::unordered_map<char, Node*> graph;
+		for (auto word : words) {
+			for (auto c : word) {
+				if (!graph.count(c)) {
+					graph[c] = new Node();
+				}
+			}
+		}
+
+		for (int i = 0; i < words.size() - 1; ++i) {
+			auto s1 = words[i];
+			auto s2 = words[i + 1];
+			int index = 0;
+			int n = min(s1.size(), s2.size());
+			while (index < n && s1[index] == s2[index]) { index++; }
+
+			if (index == n) {
+				if (s2.size() < s1.size()) { return ""; }
+			}
+
+			if (index < n)
+			{
+				graph[s1[index]]->next_chars.emplace_back(s2[index]);
+				graph[s2[index]]->previous_chars++;
+			}
+		}
+
+		stack<char> process;
+		for (auto it : graph) {
+			if (it.second->previous_chars == 0) {
+				process.push(it.first);
+			}
+		}
+
+		string order;
+		while (!process.empty()) {
+			order += process.top();
+			process.pop();
+			for (auto c : graph[order.back()]->next_chars) {
+				graph[c]->previous_chars--;
+				if (graph[c]->previous_chars == 0) {
+					process.push(c);
+				}
+			}
+		}
+
+		if (order.size() != graph.size()) { return ""; }
+		return order;
+	}
+};
+
+/*
+All permutations of array
+*/
+class Permutations {
+public:
+	void backtrack(std::vector<std::vector<int>>& res, std::vector<int>& nums, int pos, int n)
+	{
+		if (pos == n) { res.push_back(nums); }
+		for (int i = pos; i < n; ++i)
+		{
+			swap(nums[pos], nums[i]);
+			backtrack(res, nums, pos + 1, n);
+			swap(nums[pos], nums[i]);
+		}
+	}
+
+	vector<vector<int>> permute(vector<int>& nums) {
+		std::vector < std::vector<int> > S;
+		backtrack(S, nums, 0, nums.size());
+		return S;
+	}
+};
+
