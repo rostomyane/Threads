@@ -956,6 +956,10 @@ class Simplify {
 	}
 };
 
+
+/*H
+Traping rain water
+*/
 class Trap {
 public:
 	int trap(int A[], int n) {
@@ -975,5 +979,80 @@ public:
 			}
 		}
 		return res;
+	}
+};
+
+
+/*M
+Given a non-empty string s and a dictionary wordDict containing a list of non-empty words,
+determine if s can be segmented into a space-separated sequence of one or more dictionary words.
+*/
+class WordBreak {
+public:
+
+	bool wordBreak(string s, vector<string>& wordDict) {
+		std::unordered_set<string> H(wordDict.begin(), wordDict.end());
+		int n = s.size();
+		std::vector<int> dp(n + 1, 0);
+		dp[0] = 1;
+		for (int i = 1; i <= n; ++i)
+		{
+			for (int j = 0; j < i; ++j)
+			{
+				if (dp[j] && H.count(s.substr(j, i - j)))
+				{
+					dp[i] = 1;
+					break;
+				}
+			}
+		}
+		return dp[n];
+	}
+};
+
+
+/*H
+Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, 
+add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences.
+*/
+class WordBreak2 {
+	unordered_map<string, vector<string>> m;
+
+	vector<string> wordBreak(string s, vector<string>& wordDict)
+	{
+		int max_len = 0;
+		unordered_set<string> dict;
+		for (string& str : wordDict)
+		{
+			dict.insert(str);
+			max_len = max(max_len, (int)str.size());
+		}
+
+		unordered_map<int, vector<string>> mp;
+		return break_word(s, 0, dict, max_len, mp);
+	}
+
+protected:
+	vector<string> break_word(const string& s, int n, unordered_set<string>& dict,
+		int max_len, unordered_map<int, vector<string>>& mp)
+	{
+		if (mp.count(n)) return mp[n];
+
+		string str;
+		for (int i = n; i < s.length() && str.length() <= max_len; ++i)
+		{
+			str += s[i];
+			if (dict.count(str))
+			{
+				if (i == s.length() - 1)
+					mp[n].push_back(str);
+				else
+				{
+					vector<string> vs = break_word(s, i + 1, dict, max_len, mp);
+					for (auto& a : vs) mp[n].push_back(str + " " + a);
+				}
+			}
+		}
+		return mp[n];
 	}
 };
