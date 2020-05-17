@@ -682,6 +682,11 @@ public:
 Robot clean room
 */
 class CleanRoom {
+	struct Robot {
+		void turnRight(){}
+		void clean() {}
+		bool move(){}
+	};
 public:
 	unordered_map<int, unordered_map<int, int>> data;
 	int x = 0;
@@ -761,4 +766,42 @@ public:
 		// Everything is done, if the string not empty, return false.
 		return (pos == s.size() && haveNum);
 	}
+};
+
+class CloneGraph {
+	class Node {
+	public:
+		int val;
+		vector<Node*> neighbors;
+
+		Node() {
+			val = 0;
+			neighbors = vector<Node*>();
+		}
+
+		Node(int _val) {
+			val = _val;
+			neighbors = vector<Node*>();
+		}
+
+		Node(int _val, vector<Node*> _neighbors) {
+			val = _val;
+			neighbors = _neighbors;
+		}
+	};
+public:
+	Node* cloneGraph(Node* node) {
+		if (!node) {
+			return NULL;
+		}
+		if (copies.find(node) == copies.end()) {
+			copies[node] = new Node(node->val, {});
+			for (Node* neighbor : node->neighbors) {
+				copies[node]->neighbors.push_back(cloneGraph(neighbor));
+			}
+		}
+		return copies[node];
+	}
+private:
+	unordered_map<Node*, Node*> copies;
 };
