@@ -10,11 +10,10 @@ namespace experimental {
     }
 
     template <typename T1, typename T2>
-    inline std::pair< typename std::decay<T1>::type, typename std::decay<T2>::type >
+    inline std::pair<std::decay_t<T1>,std::decay_t<T2> >
         make_pair(T1&& x, T2&& y)
     {
-        return pair< typename decay<T1>::type,
-            typename decay<T2>::type >(std::forward<T1>(x),
-                std::forward<T2>(y));
+        return std::pair<std::decay_t<T1>, std::decay_t<T2>> 
+            (std::forward<T1>(x), std::forward<T2>(y));
     }
 }
