@@ -7,6 +7,9 @@
 template<typename T>
 class A;
 
+template<typename T>
+void print(T t) {}
+
 int main()
 {
     int a=0;
